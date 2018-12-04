@@ -1,6 +1,3 @@
-import QrScanner from "../libraries/qr-scanner/qr-scanner.min.js";
-// import the QrScanner object from the qr-scanner.min.js file. Otherwise we can't use it.
-
 (function () {
 
     'use strict';
@@ -13,25 +10,35 @@ import QrScanner from "../libraries/qr-scanner/qr-scanner.min.js";
 
     function control() {
         var vm = angular.extend(this, {
-            date: new Date().toString()
+            scanner: new Instascan.Scanner({
+                video: document.getElementById('qr-video'),
+                continuous: true,
+                scanPeriod: 5,
+                backgroundScan: false,
+                refractoryPeriod: 3000
+            })
         });
 
-        function scanHandler(result) {
-            // function that executes when a barcode is detected
-
-            // display the data read from the QR code
-            alert(result);
-        }
+        vm.scanner.addListener('scan', function (content) {
+            alert(content);
+            vm.scanner.stop();
+        });
 
         vm.scanBarcode = function () {
-            // get the <video> element
-            let videoElement = document.querySelector('#qr-video');
 
-            // create the scanner
-            const scanner = new QrScanner(videoElement, scanHandler);
+            Instascan.Camera.getCameras().then(function (cameras) {
 
-            // start scanning
-            scanner.start();
+                if (cameras.length > 0) {
+                    vm.scanner.start(cameras[0]);
+                    console.log("started scanner");
+                } else {
+                    console.error('No cameras found.');
+                }
+
+            }).catch(function (e) {
+                console.error(e);
+            });
+
         };
 
         return vm;
