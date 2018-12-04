@@ -9,11 +9,11 @@ import QrScanner from "../libraries/qr-scanner/qr-scanner.min.js";
 
     app.controller('Main', control);
 
-    control.$inject = ['$scope'];
+    control.$inject = [];
 
-    function control($scope) {
+    function control() {
         var vm = angular.extend(this, {
-            // no variables for this demo
+            date: new Date().toString()
         });
 
         function scanHandler(result) {
